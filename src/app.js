@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { corsOptions, limiter } from './constants/config.js';
+import { errResponse } from './helpers/response.js';
 
 const app = express();
 
@@ -23,5 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('Welcome to the SocioFeed Backend');
 });
+
+app.use(errResponse);
 
 export default app;
