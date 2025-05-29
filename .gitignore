@@ -6,4 +6,3 @@ build
 .env
 
 generated
-prisma/migrations

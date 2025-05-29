@@ -1,11 +1,18 @@
-export const sendResponse = (res, statuscode, status, operation, data = {}) => {
+export const sendResponse = (res, statuscode, status, message, data = {}) => {
   return res.status(statuscode).json({
     status,
     statuscode,
-    operation,
+    message,
     data,
   });
 };
+
+export class CustomError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+}
 
 export const errResponse = (err, req, res) => {
   return res.status(err.status || 500).json({

@@ -26,7 +26,6 @@ export default [
       ...js.configs.recommended.rules,
       ...prettierConfig.rules,
       eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
       'prefer-const': 'error',
       'no-var': 'error',
       'comma-dangle': ['error', 'only-multiline'],

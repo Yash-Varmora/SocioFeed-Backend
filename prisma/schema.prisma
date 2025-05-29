@@ -18,7 +18,7 @@ model User {
   id                      String                   @id @default(uuid())
   email                   String                   @unique
   username                String                   @unique
-  password_hash           String?
+  password                String?
   avatarUrl               String?
   bio                     String?
   totalFollowers          Int                      @default(0)
@@ -28,7 +28,7 @@ model User {
   isGoogleLogin           Boolean                  @default(false)
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
-  refreshTokens           RefreshTokens[]
+  refreshTokens           Token[]
   followsFollower         Follow[]                 @relation("follower")
   followsFollowing        Follow[]                 @relation("following")
   posts                   Post[]
@@ -47,7 +47,7 @@ model User {
   ownedGroups             ChatGroup[]              @relation("ownedGroups")
 }
 
-model RefreshTokens {
+model Token {
   id        String   @id @default(uuid())
   userId    String
   token     String
@@ -60,9 +60,9 @@ model RefreshTokens {
 }
 
 model Follow {
-  id        String   @id @default(uuid())
-  followerId  String   
-  followingId String   
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
   createdAt   DateTime @default(now())
   follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
@@ -114,7 +114,7 @@ model PostMedia {
 }
 
 model PostLike {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   postId    String
   createdAt DateTime @default(now())
@@ -128,7 +128,7 @@ model PostLike {
 }
 
 model PostSave {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   postId    String
   createdAt DateTime @default(now())
@@ -189,7 +189,7 @@ model Hashtag {
 }
 
 model PostHashtag {
-  id          String   @id @default(uuid())
+  id        String  @id @default(uuid())
   postId    String
   hashtagId String
   post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -201,7 +201,7 @@ model PostHashtag {
 }
 
 model TagInPost {
-  id          String   @id @default(uuid())
+  id     String @id @default(uuid())
   postId String
   userId String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -213,7 +213,7 @@ model TagInPost {
 }
 
 model TagInComment {
-  id          String   @id @default(uuid())
+  id        String  @id @default(uuid())
   commentId String
   userId    String
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
@@ -243,7 +243,7 @@ model ChatGroup {
 }
 
 model GroupMember {
-  id          String   @id @default(uuid())
+  id       String    @id @default(uuid())
   userId   String
   groupId  String
   isAdmin  Boolean   @default(false)
@@ -259,23 +259,22 @@ model GroupMember {
 }
 
 model Message {
-  id           String         @id @default(uuid())
-  senderId     String
-  receiverId   String?
-  groupId      String?
-  content      String?
-  isRead       Boolean        @default(false)
-  createdAt    DateTime       @default(now())
-  sender       User           @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver     User?          @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  group        ChatGroup?     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  id         String     @id @default(uuid())
+  senderId   String
+  receiverId String?
+  groupId    String?
+  content    String?
+  isRead     Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  sender     User       @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User?      @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  group      ChatGroup? @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([senderId])
   @@index([receiverId])
   @@index([groupId])
   @@index([createdAt])
 }
-
 
 model Notification {
   id        String   @id @default(uuid())
