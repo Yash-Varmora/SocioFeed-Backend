@@ -7,6 +7,7 @@ import {
   activate,
   forgotPassword,
   resetPassword,
+  currentUser,
 } from '../services/auth.service.js';
 import { setAuthCookies, clearAuthCookies } from '../services/token.service.js';
 
@@ -96,6 +97,17 @@ const logoutController = async (req, res, next) => {
   }
 };
 
+const getCurrentUser = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const user = await currentUser(id);
+    return sendResponse(res, 200, 'SUCCESS', 'User data', user);
+  } catch (error) {
+    console.log('getCurrentUser error', error.message);
+    return next(error);
+  }
+};
+
 export {
   registerController,
   loginController,
@@ -104,4 +116,5 @@ export {
   forgotPasswordController,
   resetPasswordController,
   logoutController,
+  getCurrentUser,
 };

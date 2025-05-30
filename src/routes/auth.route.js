@@ -7,6 +7,7 @@ import {
   forgotPasswordController,
   resetPasswordController,
   logoutController,
+  getCurrentUser,
 } from '../controllers/auth.controller.js';
 import {
   activateValidation,
@@ -17,9 +18,11 @@ import {
   resetPasswordValidation,
 } from '../validators/authValidators.js';
 import validate from '../middleware/validators.js';
+import verifyToken from '../middleware/authMiddleware.js';
 
 const route = Router();
 
+route.get('/me', verifyToken, getCurrentUser);
 route.post('/register', registerValidation, validate, registerController);
 route.post('/login', loginValidation, validate, loginController);
 route.post('/google', googleLoginValidation, validate, googleLoginController);

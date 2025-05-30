@@ -141,4 +141,24 @@ const resetPassword = async (token, newPassword) => {
   await prisma.token.deleteMany({ where: { token } });
 };
 
-export { register, login, googleLogin, activate, forgotPassword, resetPassword };
+const currentUser = async id => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      avatarUrl: true,
+      bio: true,
+      totalFollowers: true,
+      totalFollowing: true,
+      createdAt: true,
+    },
+  });
+  if (!user) {
+    throw new CustomError(404, 'User not Found');
+  }
+  return user;
+};
+
+export { register, login, googleLogin, activate, forgotPassword, resetPassword, currentUser };

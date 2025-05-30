@@ -23,11 +23,11 @@ const verifyToken = async (req, res, next) => {
   }
 
   try {
-    const payload = verifyAccessToken(accessToken);
+    const payload = await verifyAccessToken(accessToken);
     req.user = payload;
     return next();
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
+    if (error.message === 'jwt expired') {
       return handleRefresh(req, res, next);
     }
     clearAuthCookies(res);
@@ -75,3 +75,5 @@ const handleRefresh = async (req, res, next) => {
     return next(new CustomError(401, 'Invalid token'));
   }
 };
+
+export default verifyToken;
