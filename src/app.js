@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { corsOptions, limiter } from './constants/config.js';
-import { errResponse, sendResponse } from './helpers/response.js';
+import { CustomError, errResponse, sendResponse } from './helpers/response.js';
 import indexRoute from './routes/index.js';
 
 const app = express();
@@ -27,6 +27,10 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api', indexRoute);
+
+app.use((req, res, next) => {
+  next(new CustomError(404, 'Not found'));
+});
 
 app.use(errResponse);
 
