@@ -1,5 +1,5 @@
 import { CustomError, sendResponse } from '../helpers/response.js';
-import { searchUsersService } from '../services/user.service.js';
+import { getMutualFriendsService, searchUsersService } from '../services/user.service.js';
 
 const searchUsers = async (req, res, next) => {
   try {
@@ -18,4 +18,18 @@ const searchUsers = async (req, res, next) => {
   }
 };
 
-export { searchUsers };
+const getMutualFriends = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const currentUserId = req.user.id;
+
+    const mutualFriends = await getMutualFriendsService(currentUserId, username);
+    console.log(mutualFriends);
+    return sendResponse(res, 200, 'SUCCESS', 'Mutual Friend get Successfully', mutualFriends);
+  } catch (error) {
+    console.error('Mutual friends error:', error);
+    return next(error);
+  }
+};
+
+export { searchUsers, getMutualFriends };

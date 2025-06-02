@@ -14,6 +14,11 @@ const profile = async username => {
       totalFollowers: true,
       totalFollowing: true,
       createdAt: true,
+      followsFollowing: {
+        select: {
+          followerId: true,
+        },
+      },
     },
   });
   if (!user) {
