@@ -4,7 +4,6 @@ import { followUserService, unfollowUserService } from '../services/follow.servi
 const followUser = async (req, res, next) => {
   try {
     const { followingId } = req.body;
-    console.log(followingId);
     const followerId = req.user.id;
 
     await followUserService(followerId, followingId);
