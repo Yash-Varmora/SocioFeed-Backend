@@ -1,5 +1,10 @@
 import { CustomError, sendResponse } from '../helpers/response.js';
-import { profile, updateProfile, uploadUserAvatar } from '../services/profile.service.js';
+import {
+  getUserPosts,
+  profile,
+  updateProfile,
+  uploadUserAvatar,
+} from '../services/profile.service.js';
 
 const getProfile = async (req, res, next) => {
   try {
@@ -38,4 +43,15 @@ const uploadAvatar = async (req, res, next) => {
   }
 };
 
-export { getProfile, updateProfileController, uploadAvatar };
+const getUserPostsController = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const posts = await getUserPosts(username);
+    return sendResponse(res, 200, 'SUCCESS', 'User posts fetched successfully', posts);
+  } catch (error) {
+    console.log('GetUserPosts error', error.message);
+    return next(error);
+  }
+};
+
+export { getProfile, updateProfileController, uploadAvatar, getUserPostsController };

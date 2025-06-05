@@ -5,6 +5,7 @@ import verifyGoogleToken from '../helpers/googleAuth.js';
 import { generateAccessToken, generateRefreshToken, storeRefreshToken } from './token.service.js';
 import crypto from 'crypto';
 import { CustomError } from '../helpers/response.js';
+import config from '../constants/config.js';
 
 const register = async ({ email, username, password }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,7 +27,7 @@ const register = async ({ email, username, password }) => {
     },
   });
 
-  const activationLink = `http://localhost:5173/activate?token=${activationToken}`;
+  const activationLink = `${config.FRONTEND_URL}/activate?token=${activationToken}`;
   await sendEmail({
     to: email,
     subject: 'Activate Your SocioFeed Account',
@@ -115,7 +116,7 @@ const forgotPassword = async email => {
     },
   });
 
-  const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+  const resetLink = `${config.FRONTEND_URL}/reset-password?token=${resetToken}`;
   await sendEmail({
     to: email,
     subject: 'Reset Your SocioFeed Password',

@@ -19,17 +19,38 @@ const followUserService = async (followerId, followingId) => {
     throw new CustomError(400, 'Already following this user');
   }
 
-  await prisma.$transaction([
-    prisma.follow.create({ data: { followerId, followingId } }),
-    prisma.user.update({
-      where: { id: followerId },
-      data: { totalFollowing: { increment: 1 } },
-    }),
-    prisma.user.update({
+  await prisma.$transaction(async prisma => {
+    await prisma.follow.create({ data: { followerId, followingId } }),
+      await prisma.user.update({
+        where: { id: followerId },
+        data: { totalFollowing: { increment: 1 } },
+      });
+    await prisma.user.update({
       where: { id: followingId },
       data: { totalFollowers: { increment: 1 } },
-    }),
-  ]);
+    });
+    const preference = await prisma.notificationPreferences.findUnique({
+      where: { userId: followingId },
+      select: { notifyOnNewFollower: true },
+    });
+    if (
+      preference?.notifyOnNewFollower ||
+      (preference?.notifyOnNewFollower === undefined && true)
+    ) {
+      console.log('hello');
+      await prisma.notification.create({
+        data: {
+          userId: followingId,
+          actorId: followerId,
+          type: 'FOLLOW',
+        },
+      });
+    }
+    await prisma.user.update({
+      where: { id: followingId },
+      data: { totalNotifications: { increment: 1 } },
+    });
+  });
 };
 
 const unfollowUserService = async (followerId, followingId) => {

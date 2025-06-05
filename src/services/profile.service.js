@@ -88,4 +88,66 @@ const uploadUserAvatar = async (id, fileBuffer) => {
   return updatedUser;
 };
 
-export { profile, updateProfile, uploadUserAvatar };
+const getUserPosts = async username => {
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new CustomError(404, 'User not found');
+  }
+
+  const posts = await prisma.post.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      content: true,
+      visibility: true,
+      createdAt: true,
+      likeCount: true,
+      commentCount: true,
+      postMedia: {
+        select: {
+          mediaUrl: true,
+          mediaType: true,
+          order: true,
+        },
+        orderBy: { order: 'asc' },
+      },
+      postHashtags: {
+        select: {
+          hashtag: {
+            select: {
+              id: true,
+              tag: true,
+            },
+          },
+        },
+      },
+      tagsInPosts: {
+        select: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          username: true,
+          avatarUrl: true,
+        },
+      },
+    },
+  });
+
+  return posts;
+};
+
+export { profile, updateProfile, uploadUserAvatar, getUserPosts };
