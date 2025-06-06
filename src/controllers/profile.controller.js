@@ -46,7 +46,8 @@ const uploadAvatar = async (req, res, next) => {
 const getUserPostsController = async (req, res, next) => {
   try {
     const { username } = req.params;
-    const posts = await getUserPosts(username);
+    const loggedInUserId = req.user.id;
+    const posts = await getUserPosts(username, loggedInUserId);
     return sendResponse(res, 200, 'SUCCESS', 'User posts fetched successfully', posts);
   } catch (error) {
     console.log('GetUserPosts error', error.message);

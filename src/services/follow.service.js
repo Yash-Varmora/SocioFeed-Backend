@@ -37,7 +37,6 @@ const followUserService = async (followerId, followingId) => {
       preference?.notifyOnNewFollower ||
       (preference?.notifyOnNewFollower === undefined && true)
     ) {
-      console.log('hello');
       await prisma.notification.create({
         data: {
           userId: followingId,

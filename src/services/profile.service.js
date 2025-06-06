@@ -88,7 +88,7 @@ const uploadUserAvatar = async (id, fileBuffer) => {
   return updatedUser;
 };
 
-const getUserPosts = async username => {
+const getUserPosts = async (username, loggedInUserId) => {
   const user = await prisma.user.findUnique({
     where: { username },
     select: { id: true },
@@ -98,8 +98,36 @@ const getUserPosts = async username => {
     throw new CustomError(404, 'User not found');
   }
 
+  const isOwnProfile = user.id === loggedInUserId;
+
+  const whereClause = { userId: user.id };
+
+  if (isOwnProfile) {
+    whereClause.visibility = {
+      in: ['PUBLIC', 'FRIENDS_ONLY', 'PRIVATE'],
+    };
+  } else if (loggedInUserId) {
+    const follows = await prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: loggedInUserId,
+          followingId: user.id,
+        },
+      },
+    });
+    if (follows) {
+      whereClause.visibility = {
+        in: ['PUBLIC', 'FRIENDS_ONLY'],
+      };
+    } else {
+      whereClause.visibility = 'PUBLIC';
+    }
+  } else {
+    whereClause.visibility = 'PUBLIC';
+  }
+
   const posts = await prisma.post.findMany({
-    where: { userId: user.id },
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,

@@ -27,6 +27,7 @@ const verifyToken = async (req, res, next) => {
     req.user = payload;
     return next();
   } catch (error) {
+    console.log('Token verification error:', error.message);
     if (error.message === 'jwt expired') {
       return handleRefresh(req, res, next);
     }

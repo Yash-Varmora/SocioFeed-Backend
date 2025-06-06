@@ -106,7 +106,7 @@ const getFeedService = async (userId, page, limit) => {
         ],
       },
       include: {
-        user: { select: { username: true, avatarUrl: true } },
+        user: { select: { id: true, username: true, avatarUrl: true } },
         postMedia: true,
         postHashtags: {
           select: {
