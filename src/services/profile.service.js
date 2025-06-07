@@ -175,7 +175,40 @@ const getUserPosts = async (username, loggedInUserId) => {
     },
   });
 
-  return posts;
+  if (loggedInUserId) {
+    const postIds = posts.map(post => post.id);
+
+    const [likes, saves] = await Promise.all([
+      prisma.postLike.findMany({
+        where: {
+          userId: loggedInUserId,
+          postId: { in: postIds },
+        },
+        select: { postId: true },
+      }),
+      prisma.postSave.findMany({
+        where: {
+          userId: loggedInUserId,
+          postId: { in: postIds },
+        },
+        select: { postId: true },
+      }),
+    ]);
+
+    const likedPostIds = new Set(likes.map(like => like.postId));
+    const savedPostIds = new Set(saves.map(save => save.postId));
+
+    return posts.map(post => ({
+      ...post,
+      isLike: likedPostIds.has(post.id),
+      isSaved: savedPostIds.has(post.id),
+    }));
+  }
+  return posts.map(post => ({
+    ...post,
+    isLike: false,
+    isSaved: false,
+  }));
 };
 
 export { profile, updateProfile, uploadUserAvatar, getUserPosts };
