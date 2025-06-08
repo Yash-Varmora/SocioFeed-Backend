@@ -143,23 +143,34 @@ const resetPassword = async (token, newPassword) => {
 };
 
 const currentUser = async id => {
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      email: true,
-      username: true,
-      avatarUrl: true,
-      bio: true,
-      totalFollowers: true,
-      totalFollowing: true,
-      createdAt: true,
-    },
-  });
+  const [user, notificationCount] = await Promise.all([
+    await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        avatarUrl: true,
+        bio: true,
+        totalFollowers: true,
+        totalFollowing: true,
+        createdAt: true,
+      },
+    }),
+    prisma.notification.count({
+      where: {
+        userId: id,
+        isRead: false,
+      },
+    }),
+  ]);
   if (!user) {
     throw new CustomError(404, 'User not Found');
   }
-  return user;
+  return {
+    ...user,
+    notificationCount,
+  };
 };
 
 export { register, login, googleLogin, activate, forgotPassword, resetPassword, currentUser };

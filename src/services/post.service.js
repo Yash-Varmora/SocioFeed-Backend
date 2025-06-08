@@ -172,8 +172,19 @@ const getPostService = async (postId, userId) => {
   const post = await prisma.post.findUnique({
     where: { id: postId },
     include: {
-      user: { select: { username: true, avatarUrl: true } },
+      user: { select: { id: true, username: true, avatarUrl: true } },
       postMedia: true,
+      tagsInPosts: {
+        select: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -195,7 +206,32 @@ const getPostService = async (postId, userId) => {
     throw new CustomError(403, 'Unauthorized to view post');
   }
 
-  return post;
+  const [like, save] = await Promise.all([
+    prisma.postLike.findUnique({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      select: { postId: true },
+    }),
+    prisma.postSave.findUnique({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      select: { postId: true },
+    }),
+  ]);
+
+  return {
+    ...post,
+    isLike: !!like,
+    isSaved: !!save,
+  };
 };
 
 const updatePostService = async (postId, userId, content, visibility) => {

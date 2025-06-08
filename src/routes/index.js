@@ -6,6 +6,7 @@ import followRoute from './follow.route.js';
 import postRoute from './post.route.js';
 import notificationRoute from './notification.route.js';
 import hashtagRoute from './hashtag.route.js';
+import commentRoute from './comment.route.js';
 
 const route = Router();
 
@@ -16,5 +17,6 @@ route.use('/follows', followRoute);
 route.use('/posts', postRoute);
 route.use('/notifications', notificationRoute);
 route.use('/hashtags', hashtagRoute);
+route.use('/comments', commentRoute);
 
 export default route;
