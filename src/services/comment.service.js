@@ -113,7 +113,7 @@ const editCommentService = async (userId, commentId, content) => {
 const deleteCommentService = async (userId, commentId) => {
   const comment = await prisma.comment.findUnique({
     where: { id: commentId },
-    select: { userId: true, postId: true },
+    select: { userId: true, postId: true, parentCommentId: true },
   });
 
   if (!comment || comment.userId !== userId) {
@@ -140,10 +140,12 @@ const deleteCommentService = async (userId, commentId) => {
     await prisma.notification.deleteMany({ where: { commentId: { in: commentIds } } });
     await prisma.comment.deleteMany({ where: { id: { in: commentIds } } });
 
-    await prisma.post.update({
-      where: { id: comment.postId },
-      data: { commentCount: { decrement: commentIds.length } },
-    });
+    if (!comment.parentCommentId) {
+      await prisma.post.update({
+        where: { id: comment.postId },
+        data: { commentCount: { decrement: commentIds.length } },
+      });
+    }
   });
 };
 

@@ -119,6 +119,17 @@ const getFeedService = async (userId, page, limit) => {
             },
           },
         },
+        tagsInPosts: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip,

@@ -21,7 +21,6 @@ const createPost = async (req, res, next) => {
     const userId = req.user.id;
     const taggedUsers = taggedUserIds ? JSON.parse(taggedUserIds) : [];
     const hashtagsArray = hashtags ? JSON.parse(hashtags) : [];
-    console.log(hashtagsArray);
     const post = await createPostService(
       userId,
       content,
