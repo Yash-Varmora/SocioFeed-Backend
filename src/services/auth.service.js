@@ -13,6 +13,15 @@ import { CustomError } from '../helpers/response.js';
 import config from '../constants/config.js';
 
 const register = async ({ email, username, password }) => {
+  const existingUser = await prisma.user.findFirst({
+    where: { OR: [{ email }, { username }] },
+    select: {
+      id: true,
+    },
+  });
+  if (existingUser) {
+    throw new CustomError(400, 'User already exist, use different email or username');
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: {
@@ -20,6 +29,16 @@ const register = async ({ email, username, password }) => {
       username,
       password: hashedPassword,
       isActive: false,
+      notificationPreferences: {
+        create: {
+          notifyOnNewFollower: true,
+          notifyOnPostLike: true,
+          notifyOnPostComment: true,
+          notifyOnCommentLike: true,
+          notifyOnGroupMessage: true,
+          notifyOnDirectMessage: true,
+        },
+      },
     },
   });
 
