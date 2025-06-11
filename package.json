@@ -7,6 +7,7 @@
     "start": "node --env-file=.env server.js",
     "dev": "nodemon --env-file=.env server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node --env-file=.env prisma/seed.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "lint:fix": "eslint . --fix",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.27.1",
     "@eslint/js": "^9.27.0",
+    "@faker-js/faker": "^9.8.0",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
