@@ -1,7 +1,7 @@
 import prisma from '../configs/prisma.config.js';
 import { CustomError } from '../helpers/response.js';
 
-const searchUsersService = async (query, page = 1, limit = 2) => {
+const searchUsersService = async (query, page = 1, limit = 20) => {
   const skip = (page - 1) * limit;
 
   const [users, total] = await Promise.all([

@@ -40,7 +40,7 @@ const getFeed = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 2;
+    const limit = parseInt(req.query.limit) || 20;
 
     const posts = await getFeedService(userId, page, limit);
 

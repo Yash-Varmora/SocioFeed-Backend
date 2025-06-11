@@ -4,6 +4,7 @@ import {
   generateAccessToken,
   setAuthCookies,
   clearAuthCookies,
+  removeRefreshToken,
 } from '../services/token.service.js';
 import prisma from '../configs/prisma.config.js';
 import { CustomError } from '../helpers/response.js';
@@ -18,6 +19,14 @@ const resolvePendingRequests = () => {
 
 const verifyToken = async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    clearAuthCookies(res);
+    if (accessToken) {
+      await removeRefreshToken(refreshToken);
+    }
+    return next(new CustomError(401, 'Something want wrong, please login again'));
+  }
   if (!accessToken) {
     return handleRefresh(req, res, next);
   }
@@ -58,6 +67,8 @@ const handleRefresh = async (req, res, next) => {
     const payload = await verifyRefreshToken(refreshToken);
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (!user) {
+      await removeRefreshToken(refreshToken);
+      await clearAuthCookies(res);
       return next(new CustomError(400, 'User not found'));
     }
 
@@ -70,6 +81,7 @@ const handleRefresh = async (req, res, next) => {
     return next();
   } catch (error) {
     isRefreshing = false;
+    await removeRefreshToken(refreshToken);
     clearAuthCookies(res);
     resolvePendingRequests();
     console.log('Error refreshing token:', error.message);

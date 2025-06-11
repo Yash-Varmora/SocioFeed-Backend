@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { redisClient } from '../configs/redis.config.js';
 import config from '../constants/config.js';
 import prisma from '../configs/prisma.config.js';
 import { CustomError } from '../helpers/response.js';
@@ -21,7 +20,21 @@ const storeRefreshToken = async (userId, token) => {
   await prisma.token.create({
     data: { userId, token, expiresAt },
   });
-  await redisClient.setEx(`blacklist:${userId}`, 7 * 24 * 60 * 60, '0');
+};
+
+const removeRefreshToken = async refreshToken => {
+  try {
+    const token = await prisma.token.findFirst({
+      where: { token: refreshToken },
+      select: { id: true },
+    });
+    if (token) {
+      await prisma.token.delete({ where: { id: token.id } });
+    }
+  } catch (error) {
+    console.log('Error removing refresh token:', error.message);
+    throw new CustomError(400, error.message);
+  }
 };
 
 const verifyRefreshToken = async token => {
@@ -30,7 +43,7 @@ const verifyRefreshToken = async token => {
     const storedToken = await prisma.token.findFirst({
       where: { token, userId: payload.id, expiresAt: { gt: new Date() } },
     });
-    if (!storedToken) throw new Error('Invalid refresh token');
+    if (!storedToken) throw new CustomError(400, 'Invalid refresh token');
     return payload;
   } catch (error) {
     console.log('verifyRefreshToken error', error.message);
@@ -79,6 +92,7 @@ export {
   generateAccessToken,
   generateRefreshToken,
   storeRefreshToken,
+  removeRefreshToken,
   verifyRefreshToken,
   verifyAccessToken,
   setAuthCookies,

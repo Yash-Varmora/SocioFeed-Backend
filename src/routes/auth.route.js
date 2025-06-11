@@ -29,6 +29,6 @@ route.post('/google', googleLoginValidation, validate, googleLoginController);
 route.post('/activate', activateValidation, validate, activateController);
 route.post('/forgot-password', forgotPasswordValidation, validate, forgotPasswordController);
 route.post('/reset-password', resetPasswordValidation, validate, resetPasswordController);
-route.post('/logout', logoutController);
+route.post('/logout', verifyToken, logoutController);
 
 export default route;

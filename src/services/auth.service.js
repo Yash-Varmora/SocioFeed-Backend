@@ -2,7 +2,12 @@ import bcrypt from 'bcrypt';
 import prisma from '../configs/prisma.config.js';
 import sendEmail from '../helpers/sendMail.js';
 import verifyGoogleToken from '../helpers/googleAuth.js';
-import { generateAccessToken, generateRefreshToken, storeRefreshToken } from './token.service.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  removeRefreshToken,
+  storeRefreshToken,
+} from './token.service.js';
 import crypto from 'crypto';
 import { CustomError } from '../helpers/response.js';
 import config from '../constants/config.js';
@@ -173,4 +178,17 @@ const currentUser = async id => {
   };
 };
 
-export { register, login, googleLogin, activate, forgotPassword, resetPassword, currentUser };
+const logout = async refreshToken => {
+  return await removeRefreshToken(refreshToken);
+};
+
+export {
+  register,
+  login,
+  googleLogin,
+  activate,
+  forgotPassword,
+  resetPassword,
+  currentUser,
+  logout,
+};

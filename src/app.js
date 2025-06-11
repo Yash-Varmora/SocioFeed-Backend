@@ -32,6 +32,9 @@ app.use((req, res, next) => {
   next(new CustomError(404, 'Not found'));
 });
 
-app.use(errResponse);
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  errResponse(err, req, res);
+});
 
 export default app;

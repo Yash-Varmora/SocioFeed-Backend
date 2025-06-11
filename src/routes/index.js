@@ -7,6 +7,8 @@ import postRoute from './post.route.js';
 import notificationRoute from './notification.route.js';
 import hashtagRoute from './hashtag.route.js';
 import commentRoute from './comment.route.js';
+import messageRoute from './message.route.js';
+import chatRoute from './chat.route.js';
 
 const route = Router();
 
@@ -18,5 +20,7 @@ route.use('/posts', postRoute);
 route.use('/notifications', notificationRoute);
 route.use('/hashtags', hashtagRoute);
 route.use('/comments', commentRoute);
+route.use('/messages', messageRoute);
+route.use('/chats', chatRoute);
 
 export default route;

@@ -151,7 +151,7 @@ const deleteCommentService = async (userId, commentId) => {
 
 const getCommentsService = async (postId, parentCommentId, page) => {
   const pageNumber = parseInt(page, 10) || 1;
-  const pageSize = 10;
+  const pageSize = 20;
 
   const whereClause = { postId };
   if (parentCommentId) {

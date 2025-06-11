@@ -10,7 +10,7 @@ const searchUsers = async (req, res, next) => {
   try {
     const { query } = req.body;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 2;
+    const limit = parseInt(req.query.limit) || 20;
     if (!query) {
       throw new CustomError(400, 'Query is required');
     }
@@ -27,7 +27,7 @@ const getFollowers = async (req, res, next) => {
   try {
     const { username } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 2;
+    const limit = parseInt(req.query.limit) || 20;
 
     const result = await getFollowersService(username, page, limit);
 
@@ -45,7 +45,7 @@ const getFollowing = async (req, res, next) => {
   try {
     const { username } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 2;
+    const limit = parseInt(req.query.limit) || 20;
 
     const result = await getFollowingService(username, page, limit);
 

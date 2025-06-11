@@ -8,6 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   currentUser,
+  logout,
 } from '../services/auth.service.js';
 import { setAuthCookies, clearAuthCookies } from '../services/token.service.js';
 
@@ -89,6 +90,8 @@ const resetPasswordController = async (req, res, next) => {
 
 const logoutController = async (req, res, next) => {
   try {
+    const { refreshToken } = req.cookies;
+    await logout(refreshToken);
     clearAuthCookies(res);
     return sendResponse(res, 200, 'SUCCESS', 'Logged out successfully');
   } catch (error) {
